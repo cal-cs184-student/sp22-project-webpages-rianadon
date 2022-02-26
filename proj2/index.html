@@ -1,7 +1,128 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 2 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+  <style>
+    body {
+      padding: 100px;
+      width: 1000px;
+      margin: auto;
+      text-align: left;
+      font-weight: 300;
+      font-family: 'Open Sans', sans-serif;
+      color: #121212;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: 'Source Sans Pro', sans-serif;
+    }
+  </style>
+  <title>CS 184 Mesh Editor</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+  <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2020</h1>
+  <h1 align="middle">Project 2: Mesh Editor</h1>
+  <h2 align="middle">Ryan Adolf and Natalie Kemper, CS184-p2-meshedit-sp22-sweater_pt2</h2>
+
+  <br><br>
+
+  <div>
+
+    <h2 align="middle">Overview</h2>
+    <p>Give a high-level overview of what you implemented in this project. Think about what you've built as a whole.
+      Share your thoughts on what interesting things you've learned from completing the project.</p>
+
+    <h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
+
+    <h3 align="middle">Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
+
+    <h3 align="middle">Part 2: Bezier surfaces with separable 1D de Casteljau subdivision</h3>
+
+
+
+    <h2 align="middle">Section II: Sampling</h2>
+
+    <h3 align="middle">Part 3: Average normals for half-edge meshes</h3>
+
+    <p>To calculate the area-weighted vertex normal, we iterate through all faces (triangles) attached to the current vertex. We sum the normals of these faces, weighted by the faces' area, then convert to a unit vector. This unit vector is the area-weighted vertex normal.</p>
+
+    <div align="middle">
+        <img src="images/part3-normals.png" align="middle" height="400px" />
+    </div>
+
+    <p>We discovered that we can compute the normal of the face by taking the cross product of two of the edge vectors (illustrated above). It also happens that the area of the faces is equal to half the magnitude of the cross product. Thus, the cross product is already weighted by the area of the face! We add up the cross products then normalize the sum.</p>
+
+    <div align="middle">
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <img src="images/part3-mesh-without.png" align="middle" width="400px" />
+                    <figcaption align="middle">Teapot without vertex normals.</figcaption>
+                </td>
+                <td>
+                    <img src="images/part3-mesh-with.png" align="middle" width="400px" />
+                    <figcaption align="middle">Teapot with vertex normals.</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <h3 align="middle">Part 4: Half-edge flip</h3>
+
+
+    <h3 align="middle">Part 5: Half-edge split</h3>
+
+    <p>Half-edge splitting is achieved by creating some new mesh elements and  pointer reassignment. Splitting a mesh requires precisely 1 new vertex, 6 new half-edges, 3 new edges, and 2 new faces. Pointer reassignment will reconnect mesh elements so that these new parts are integrated into the mesh.</p>
+
+    <p>This task luckily did not require much debugging. However, when debugging part 6 we reviewed the code several times to make sure it was functioning as correctly.</p>
+    <div align="middle">
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <img src="images/part4-mesh-1.png" align="middle" width="400px" />
+                    <figcaption align="middle">Teapot before edge splits.</figcaption>
+                </td>
+                <td>
+                    <img src="images/part4-mesh-2.png" align="middle" width="400px" />
+                    <figcaption align="middle">Teapot after mesh splits.</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div align="middle">
+        <table style="width=100%">
+            <tr>
+                <td>
+                    <img src="images/part4-mesh-3.png" align="middle" width="400px" />
+                    <figcaption align="middle">Icosahedron before edge splits.</figcaption>
+                </td>
+                <td>
+                    <img src="images/part4-mesh-4.png" align="middle" width="400px" />
+                    <figcaption align="middle">Icosahedron after interleaved mesh splits and flips.</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+
+    <h3 align="middle">Part 6: Loop subdivision for mesh upsampling</h3>
+
+
+
+    <h2 align="middle">Section III: Optional Extra Credit</h2>
+    <p>If you are not participating in the optional mesh competition, don't worry about this section!</p>
+
+    <h3 align="middle">Part 7: Design your own mesh!</h3>
+
+</body>
+
 </html>
