@@ -19,6 +19,12 @@
     h4 {
       font-family: 'Source Sans Pro', sans-serif;
     }
+   .loops img { width: 165px; height: 200px; object-fit: cover; }
+   .loops {
+       padding: 0;
+   }
+   .big .loops img { width: 250px; height: 220px; }
+   .bigger .loops img { width: 300px; height: 250px ; }
   </style>
   <title>CS 184 Mesh Editor</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -286,7 +292,74 @@
 
     <h3 align="middle">Part 6: Loop subdivision for mesh upsampling</h3>
 
+    <p>We implemented loop subdivision by implementing several sequentially-run steps:</p>
+    <ol>
+        <li>Iterate through all vertices. Set the vertex's new position to a weighted average of its position and all neighboring vertex positions, and mark the vertex as old..</li>
+        <li>Iterate through all edges. Set each edge's new position to a weighted average of its position and nearby vertex positions, and mark the edge as old.</li>
+        <li>Split all edges that connect old vertices and set the new vertex's new position to the edge's new position.</li>
+        <li>Flip all new edges connecting a new and old vertex.</li>
+        <li>Update all vertex positions to their new positions.</li>
+    </ol>
 
+    <p>In order to help debug, we modified the on-screen display for edge information to tell us whether the edge was new or old. We used this to find a bug in our edge splitting code that, upon splitting an old edge, did not mark both halves as old. It was also useful to edit the code to mark only some edges are new so we could make sure the correct edges were split without being overwhelmed by all the new geometry.</p>
+
+    <div align="middle">
+        <table style="border-collapse: collapse">
+            <tr>
+                <td class="loops"><img src="images/loop3.png" align="middle" /></td>
+                <td class="loops"><img src="images/loop4.png" align="middle" /></td>
+                <td class="loops"><img src="images/loop5.png" align="middle" /></td>
+                <td class="loops"><img src="images/loop6.png" align="middle" /></td>
+                <td class="loops"><img src="images/loop7.png" align="middle" /></td>
+                <td class="loops"><img src="images/loop8.png" align="middle" /></td>
+            </tr>
+        </table>
+        <figcaption align="middle">Cube with loop subdivision applied repeatedly.</figcaption>
+    </div>
+
+    <div align="middle" class="big">
+        <table style="border-collapse: collapse">
+            <tr>
+                <td class="loops"><img src="images/tor1.png" align="middle" /></td>
+                <td class="loops"><img src="images/tor2.png" align="middle" /></td>
+                <td class="loops"><img src="images/tor3.png" align="middle" /></td>
+                <td class="loops"><img src="images/tor4.png" align="middle" /></td>
+            </tr>
+        </table>
+        <figcaption align="middle">Torus with loop subdivision applied repeatedly.</figcaption>
+    </div>
+
+    <p>From the series of images above, we conclude that mesh splitting chops corners and smoothes edges. The two objects shrink in size as they are subdivided. They start from blocky, sharp geometry and end in smooth geometry. There are hints of the original corners and edges, but it's difficult to locate that same edge or corner in the subdivided model.</p>
+
+    <p>We can split edges before subdividing to decrease the effects of subdivision. Below is the torus with all edges radiating from the center (i.e. not on the edge of the torus) split into two. The torus retains more of its original flat, triangular shape.</p>
+
+
+    <div align="middle" class="big">
+        <table style="border-collapse: collapse">
+            <tr>
+                <td class="loops"><img src="images/tor5.png" align="middle" /></td>
+                <td class="loops"><img src="images/tor6.png" align="middle" /></td>
+                <td class="loops"><img src="images/tor7.png" align="middle" /></td>
+                <td class="loops"><img src="images/tor8.png" align="middle" /></td>
+            </tr>
+        </table>
+        <figcaption align="middle">Pre-split torus with loop subdivision applied repeatedly.</figcaption>
+    </div>
+
+    <p>The cube does not subdivide symmetrically. In the fourth image above there's a bit of a parallelogram or rhombus shape with two corners at the points sticking out reflecting the light that should instead look more like a square. This is because some vertices have greater degree than others. One has 6 edges (sides plus diagonal edges), and yet another has 3 (only side edges).</p>
+
+    <p>I can correct the cube by flipping edges until every vertex has degree 4 or 5. The reflective region below now looks more square-like.</p>
+
+    <div align="middle" class="bigger">
+        <table style="border-collapse: collapse">
+            <tr>
+                <td class="loops"><img src="images/loop10.png" align="middle" /></td>
+                <td class="loops"><img src="images/loop11.png" align="middle" /></td>
+                <td class="loops"><img src="images/loop12.png" align="middle" /></td>
+            </tr>
+        </table>
+        <figcaption align="middle">Symmetrical cube with loop subdivision applied repeatedly.</figcaption>
+    </div>
 
     <h2 align="middle">Section III: Optional Extra Credit</h2>
     <p>If you are not participating in the optional mesh competition, don't worry about this section!</p>
