@@ -41,18 +41,88 @@
 
 				<h2 align="middle">Part 2: Bounding Volume Hierarchy</h2>
 		        <p>For part 2, we implemented a bounding volume hierarchy (BVH) in order to accelarate our path tracer so that
-							it can render complex files more efficiently. With a naive implementation, the path tracer renders complex images
-							in a range of 40 - 60 seconds. However, with BVH implementation, we are able to optimize the complexity of ray
-							intersection from O(n) to O(log(n)). </p>
-						<p> </p>
-		        <div align="center">
-		            <table style="width=100%">
+							it can render complex files more efficiently. With a naive implementation, the path tracer rendered simple images
+							in 40 - 60 seconds. This is fairly inefficienct because the path tracer was checking if each ray was intersecting every object in the scene, even
+              if the ray completely missed the object. This inefficiency is resolved with BVH, which that uses a simple heuristic to "bound" the object in a
+              simple box to first check whether the ray hits the box. If they ray intersects, the box, the object is recursively split into smaller bounding
+              boxes to check if the ray still intersects. Essentially, we constructed a tree that stores a list of object primitives along with their bounding boxes.
+              This simple algorithm greatly improves rendering times because the ray is not arbitrarily checking the millions of primitives in a scene. </p>
+
+            <p>To begin constructing BVH accelaration, we first needed to choose a way we wanted to split our objects up, (a heuristic.) We chose to split the
+            object in half based on its longest axis. To do this, we first created a bounding box of all of the primitives' centroids, and used the bounding box
+            attribute <code>.extent</code>, which is a vector spanning the extent of the bounding box (min corner -> max coner), to find the largest of the the
+            x, y and z coordinates. The largest coordinate would tell us which axis is the longest. After finding the longest axis, we calculated the midpoint of this axis
+            as the split point heuristic to split our object primitives. </p>
+
+						<p>Then, we began to construct our BVH. A BVH leaf node stores a list of object primitives and their bounding boxes, and a BVH node stores the
+            larger bounding box of all objects and pointers to its left and right nodes. For our implementation, we first looped through all primitives and stored
+            them in one large bounding box. From there, we checked whether the number of primitives was <code><= max_leaf_size</code> where <code>max_leaf_size</code>
+            is an upper bound to how many primitives a leaf node should contain. If there were more primitives than <code>max_leaf_size</code>, we partitioned our
+            primitive list using <code>std::partition</code> and our heuristic. The partition function works as follows: If the primitive's centroid was < the splitpoint of the longest axis,
+            we leave the primitive in the front of the list. However, if the primitive's centroid is >= the splitpoint on the longest axis, the primitive is moved to the back
+            of the list. Essentially, this creates two halves of one list, the first half < splitpoint and the second half >= splitpoint. After partitioning, we created
+            the root BVH node holding all of the primitives in one bounding box, and used tree recusion to construct the left and right child nodes with our partitioned primitive list. "</p>
+
+            <p>After completing BVH, we implemented several recursive BVH intersection functions that returns true if a ray has intersected with a bounding box and stores information
+            on where the closest intersection took place. To do this, we used the ray and axis-aligned box intersection method as well as the BVH recursive traversal method as seen below. Using these
+            two algorithms, we were able to effectively check whether a ray intersected a bounding box.</p>
+
+            <div align="center">
+                <table style="width=100%">
+                    <tr>
+                        <td>
+                            <img src="images/part2/intersect.png" align="middle" width="480px" />
+                            <figcaption align="middle">BVH Recursive Traversal</figcaption>
+                        </td>
+                        <td>
+                            <img src="images/part2/boxalign.png" align="middle" width="480px" />
+                            <figcaption align="middle">Axis-Aligned Box Intersection</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <p> After fully implementing BVH, we were able to render beautiful and complex images in seconds. For example, with our native implementation, Cow.dae took roughly 1 min 40 seconds
+            (100 seconds) to render. However, with BVH implemented, it took a whopping 0.2444 seconds! Furthermore, when testing on more complex files, MaxPlanck.dae took roughly 11 min 48 seconds (708 seconds) to render with
+          the naive implementation compared to the BVH render time of 0.348 seconds—roughly 2000x speedup! </p>
+
+          <p> Some scenes, like Dragon.dae, were too complex for the naive implementation to render! However, after implementing BVH, we were able to render complex scenes with intricate
+          geometry and mesh. For example, Dragon.dae to about 0.274 - 0.596 seconds to render with BVH. Thus, it is very apparent that this simple algorithm was able to reduce our render times
+        significantly. The BVH implementation, a good heuristic, and our intersect functions are able to effectively pick which bounding boxes intersect with rays, and disregard other bounding boxes that do not intersect
+        with the ray at all. This enables us to reduce redundancies, and greatly reduce up our ray intersect runtime complexity from linear O(n) to logarithmic O(log(n)). </p>
+
+        <p> Pictured below are a few files, randing from simple to complex, after BVH implementation.</p>
+
+            </aside> </p>
+		        <div align="middle">
+		            <table style="border-collapse: collapse">
 		                <tr>
-		                    <td align="middle">
-		                    <img src="images/part2/skyLucy2.png" width="480px" />
-		                    <figcaption align="middle">Hiiii</figcaption>
+                      <td class="loops"><img src="images/part2/cow2.png" width="400px" align="middle" /></td>
+                      <td class="loops"><img src="images/part2/cow1.png" width="400px" align="middle" /></td>
+                      <td class="loops"><img src="images/part2/cow3.png" width="400px" align="middle" /></td>
 		                </tr>
 		            </table>
+                <figcaption align="middle">Cow.dae! This took about 0.2 seconds to render with BVH implementation.</figcaption>
+		        </div>
+            <div align="middle">
+		            <table style="border-collapse: collapse">
+		                <tr>
+                      <td class="loops"><img src="images/part2/max2.png" width="400px" align="middle" /></td>
+                      <td class="loops"><img src="images/part2/max1.png" width="400px" align="middle" /></td>
+                      <td class="loops"><img src="images/part2/max3.png" width="400px" align="middle" /></td>
+		                </tr>
+		            </table>
+                <figcaption align="middle">MaxPlanck.dae! This mesh, comprised of thousands of triangles, took about 0.3 seconds to render with BVH.</figcaption>
+		        </div>
+            <div align="middle">
+		            <table style="border-collapse: collapse">
+		                <tr>
+                      <td class="loops"><img src="images/part2/dragon2.png" width="400px" align="middle" /></td>
+                      <td class="loops"><img src="images/part2/dragon1.png" width="400px" align="middle" /></td>
+                      <td class="loops"><img src="images/part2/dragon3.png" width="400px" align="middle" /></td>
+		                </tr>
+		            </table>
+                <figcaption align="middle">Dragon.dae! This mesh, comprised of millions of triangles, took about 0.4 seconds to render with BVH.</figcaption>
 		        </div>
 
 
