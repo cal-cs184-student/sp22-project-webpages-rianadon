@@ -185,6 +185,110 @@
                 <figcaption align="middle">Dragon.dae! This mesh, comprised of millions of triangles, took about 0.4 seconds to render with BVH.</figcaption>
 		        </div>
 
+                <h2 align="middle">Part 3: Direct Illumination</h2>
+                <p>We implemented two methods of direct illuminations: uniform sampling by hemisphere and importance sampling by lighting. To sample by hemisphere, sample rays are randomly picked from a hemisphere about the surface's normal vector to account for all possible directions light might hit that surface. This method is wasteful because rays which do not hit a light source are rejected and do not contribute to the render. For importance sampling, only rays that hit a light source are considered, and these are weighted by their probabilities. The latter method is more efficient since more rays will be accounted for in the render. The difference is illustrated in the two images below.</p>
+
+                <div align="middle">
+		            <table style="border-collapse: collapse">
+		                <tr>
+                            <td><img src="images/part34/bunny-h.png" width="400px" align="middle" /><figcaption>Bunny with uniform sampling</figcaption></td>
+                            <td><img src="images/part34/bunny-l.png" width="400px" align="middle" /><figcaption>Bunny with importance sampling</figcaption></td>
+                        </tr>
+		            </table>
+		        </div>
+
+                <div align="middle">
+		            <table style="border-collapse: collapse">
+		                <tr>
+                            <td><img src="images/part34/spheres-h.png" width="400px" align="middle" /><figcaption>Spheres with uniform sampling</figcaption></td>
+                            <td><img src="images/part34/spheres-l.png" width="400px" align="middle" /><figcaption>Spheres with importance sampling</figcaption></td>
+                        </tr>
+		            </table>
+                </div>
+
+                <div align="middle">
+		            <table style="border-collapse: collapse">
+		                <tr>
+                            <td><img src="images/part34/bench-h.png" width="400px" align="middle" /><figcaption>Bench with uniform sampling, which does not work with point lights.</figcaption></td>
+                            <td><img src="images/part34/bench-l.png" width="400px" align="middle" /><figcaption>Bench with importance sampling, which works with point lights!</figcaption></td>
+                        </tr>
+		            </table>
+                </div>
+
+                <p>The most obvious difference between hemisphere and light sampling is the noise: with the same number of samples, light sampling produces less noise. This difference is especially pronounced in regions far from the light, such as the walls, shadows, and areas immediately adjacent to the light. As visible in the bench image, hemisphere sampling does not work with point lights, because the chance a random ray of light intersects a point is infinitesimally small.</p>
+
+                <p>The images below compare noise levels when rendering with different numbers of light rays during importance sampling.</p>
+                 <div align="middle">
+		            <table style="border-collapse: collapse">
+		                <tr>
+                            <td><img src="images/part34/bunny-1.png" width="400px" align="middle" /><figcaption>Bunny with 1 light ray.</figcaption></td>
+                            <td><img src="images/part34/bunny-4.png" width="400px" align="middle" /><figcaption>Bunny with 4 light rays.</figcaption></td>
+                        </tr>
+<tr>
+                            <td><img src="images/part34/bunny-16.png" width="400px" align="middle" /><figcaption>Bunny with 16 light rays.</figcaption></td>
+                            <td><img src="images/part34/bunny-64.png" width="400px" align="middle" /><figcaption>Bunny with 64 light rays!</figcaption></td>
+</tr>
+		            </table>
+                 </div>
+
+                <h2 align="middle">Part 4: Global Illumination</h2>
+                <p>The indirect lighting function extends one-bounce illumination by also adding the illumination of further bounces. That is, after computing the one-bounce radiance it samples a new ray, the function computes the radiance at the ray's intersection, then uses this emission and the bsdf sample in the render equation. The total radiance is the one-bounce radiance plus the emission of the indirect ray. Because calculating the radiance of the indirect ray also takes into account further indirect rays, this algorithm is recursive. It terminates with 30% probability, but only after at least one indirect bounce. Making sure to account for at least one indirect bounce helps reduce the noise in the output image. It may also terminate if the maximum number of bounces (ray depth) is reached</p>
+
+                <p>The images below are rendered with a maximum of 5 bounces.</p>
+
+<div align="middle">
+		            <table style="border-collapse: collapse">
+		                <tr>
+                            <td><img src="images/part34/bunny-g.png" width="400px" align="middle" /></td>
+                            <td><img src="images/part34/spheres-g.png" width="400px" align="middle" /></td>
+                            <td><img src="images/part34/bench-g.png" width="400px" align="middle" /></td>
+                        </tr>
+		            </table>
+</div>
+
+<p>The two images below show how the direct and indirect illumination add to the rendered image.</p>
+
+<div align="middle">
+	<table style="border-collapse: collapse">
+		<tr>
+            <td><img src="images/part34/bunny-d0.png" width="300px" align="middle" /><figcaption>Bunny with only direct illumination.</figcaption></td>
+            <td><img src="images/part34/bunny-indirect.png" width="300px" align="middle" /><figcaption>Bunny with only indirect illumination.</figcaption></td>
+        </tr>
+    </table>
+</div>
+
+<p>Below are bunny images with different maximum ray depths. As the maximum ray depth is increased, the image as expected becomes lighter (as more light is added in). The shadows immediately below the bunny are lit as rays bounce off the floor. The upper wall also become lighter and the lighting on the bunny becomes softer.</p>
+
+<div align="middle">
+	<table style="border-collapse: collapse">
+		<tr>
+            <td><img src="images/part34/bunny-d0.png" width="400px" align="middle" /><figcaption>Bunny with max ray depth 0.</figcaption></td>
+            <td><img src="images/part34/bunny-d1.png" width="400px" align="middle" /><figcaption>Bunny with max ray depth 1</figcaption></td>
+            <td><img src="images/part34/bunny-d2.png" width="400px" align="middle" /><figcaption>Bunny with max ray depth 2</figcaption></td>
+        </tr>
+        <tr>
+            <td><img src="images/part34/bunny-d3.png" width="400px" align="middle" /><figcaption>Bunny with max ray depth 3</figcaption></td>
+            <td><img src="images/part34/bunny-d100.png" width="400px" align="middle" /><figcaption>Bunny with max ray depth 100</figcaption></td>
+        </tr>
+	</table>
+</div>
+
+<p>The below images show the bunny with increasing number of samples per pixel. As the number of samples increase, the image becomes less noisy.</p>
+
+<div align="middle">
+	<table style="border-collapse: collapse">
+		<tr>
+            <td><img src="images/part34/bunny-s1.png" width="300px" align="middle" /><figcaption>Bunny with 1 sample/pixel.</figcaption></td>
+            <td><img src="images/part34/bunny-s2.png" width="300px" align="middle" /><figcaption>Bunny with 2 samples/pixel.</figcaption></td>
+            <td><img src="images/part34/bunny-s4.png" width="300px" align="middle" /><figcaption>Bunny with 4 samples/pixel.</figcaption></td>
+            <td><img src="images/part34/bunny-s8.png" width="300px" align="middle" /><figcaption>Bunny with 8 samples/pixel.</figcaption></td>
+        </tr>
+            <td><img src="images/part34/bunny-s16.png" width="300px" align="middle" /><figcaption>Bunny with 16 samples/pixel.</figcaption></td>
+            <td><img src="images/part34/bunny-s64.png" width="300px" align="middle" /><figcaption>Bunny with 64 samples/pixel.</figcaption></td>
+            <td><img src="images/part34/bunny-s1024.png" width="300px" align="middle" /><figcaption>Bunny with 1024 samples/pixel.</figcaption></td>
+        </tr>
+    </table>
+
 <h2 align="middle">Part 5: Adaptive Sampling</h2>
 
 <p> From Parts 3 and 4, we were able to render complex and realistic images with Monte Carlo. However, our images have large amounts of noise because there are not enough samples per pixel.
@@ -247,9 +351,20 @@ noise. </p>
        </table>
    </div>
 
-<p> We collaborated well as a team when working on this project. To split up the work, Natalie implemented most of Parts 1, 2, and 5, while Ryan implemented Parts 3 and 4. We
-attended project parties, and met outside of class to collaborate, talk, and debug our work together. As we implemented each part of the project, we learned how much
-simple optimizations, such as BVH constuction, can greatly improve runtime, as well as how different sampling methods (importance vs hemisphere) contribute to the direct lighting of our scenes. </p>
+   <p> We collaborated well as a team when working on this project. To split up the work, Natalie implemented most of Parts 1, 2, and 5, while Ryan implemented Parts 3 and 4. We
+       attended project parties, and met outside of class to collaborate, talk, and debug our work together. As we implemented each part of the project, we learned how much
+       simple optimizations, such as BVH constuction, can greatly improve runtime, as well as how different sampling methods (importance vs hemisphere) contribute to the direct lighting of our scenes. </p>
 </div>
+            <!-- <h2 align="middle">A Few Notes On Webpages</h2> -->
+    <!--     <p>Here are a few problems students have encountered in the past. You will probably encounter these problems at some point, so don't wait until right before the deadline to check that everything is working. Test your website on the instructional machines early!</p> -->
+    <!--     <ul> -->
+    <!--     <li>Your main report page should be called index.html.</li> -->
+    <!--     <li>Be sure to include and turn in all of the other files (such as images) that are linked in your report!</li> -->
+    <!--     <li>Use only <em>relative</em> paths to files, such as <pre>"./images/image.jpg"</pre> -->
+    <!--     Do <em>NOT</em> use absolute paths, such as <pre>"/Users/student/Desktop/image.jpg"</pre></li> -->
+    <!--     <li>Pay close attention to your filename extensions. Remember that on UNIX systems (such as the instructional machines), capitalization matters. <pre>.png != .jpeg != .jpg != .JPG</pre> -->
+    <!--     <li>Be sure to adjust the permissions on your files so that they are world readable. For more information on this please see this tutorial: <a href="http://www.grymoire.com/Unix/Permissions.html">http://www.grymoire.com/Unix/Permissions.html</a></li> -->
+    <!--     <li>And again, test your website on the instructional machines early!</li> -->
+<!-- </div> -->
 </body>
 </html>
