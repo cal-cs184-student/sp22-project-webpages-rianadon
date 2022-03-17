@@ -24,25 +24,65 @@
         <p>If you are well-versed in web development, feel free to ditch this template and make a better looking page. Just make sure that you include all the components as we've laid them out here. </p>
 
     <h2 align="middle">Part 1: Ray Generation and Intersection</h2>
-        <p>Describe what you did in Part 1. etc...</p>
-        <div align="center">
-            <table style="width=100%">
+        <p>In Part 1, we implemented a ray trace algorithm for pixels using random sampling to generate light rays. These light rays travel from a light source and bounce off of some object in the
+          scene to the camera. However, since some of these rays do not reach the camera, we generated camera rays to more efficiently create our scenes. To generate camera rays, we created a function
+          <code>Camera::generate_ray</code> that takes normalized image coordinates and transforms these coordinates to a camera ray in world space. Because the camera space has its own coordinate system, we
+          first converted our image space coordinates to camera space coordinates before transforming it into a ray in world space. This function outputs a Ray object, which consists of an origin and direction
+          vector that will be used to test object intersection. </p>
+
+          <p> After generating our camera rays, we created implemented <code>Triangle::intersect</code> and <code>Sphere::intersect</code> functions that return true whether an input ray intersects with the
+          given primitive, and stores information about the intersection point. For our triangle intersection method, we used Barycentric Coordinates and the Moller-Trumbore algorithm:</p>
+
+          <div align="center">
+              <table style="width=100%">
+                  <tr>
+                      <td align="middle">
+                      <img src="images/part1/moller.png" width="480px" />
+                      <figcaption align="middle">Moller-Trumbore Algorithm</figcaption>
+                    </td>
+                    <td>
+                      <td align="middle">
+                      <img src="images/part1/bary.png" width="400px" />
+                      <figcaption align="middle">Intersection of a ray and a triangle using barycentric coordinates (b1, b2)</figcaption>
+                    </td>
+                  </tr>
+              </table>
+          </div>
+
+          <p> In a triangle with vertices P0, P1, and P2, we can find its ray intersection point t by using the Moller-Trumbore algorithm to calculate the barycentric coordinates
+          b1 and b2, as well as t. We obtain the third barycentric coordinate by subtracting 1-b1-b2. To check whether a ray has intersected a triangle, we performed multiple checks: </p>
+          <p>1.) If t >= 0 </p>
+          <p>2.) t is in the range of the ray's minimum and maximum coordinates </p>
+          <p>3.) The barycentric coordinates (b1, b2, 1-b1-b2) are in the range [0, 1] </p>
+          <p> If all three coditions were satisfied, then the ray has intersected the triangle. If this was the case, we updated the Intersection struct attributes to store information
+            about the intersection point t, the primitive intersected, the normal at point of intersection, the BSDF of the surface at point of intersection, and the ray's "end point," <code>max_t</code>.
+          </p>
+
+          <p> We also performed a similar operation for ray-sphere intersection by finding possible times of intersection (t1 and t2 since a ray can intersect a circle at two points)
+            using the quadratic formula. Similarly, we checked whether t1 and t2 fell in the bounds of the ray's range, and updated the Intersection struct accordingly. </p>
+
+          <p> After implementing both <code>Triangle::intersect</code> and <code>Sphere::intersect</code>, we were able to generate the room shown below! </p>
+
+        <div align="middle">
+            <table style="border-collapse: collapse">
                 <tr>
-                    <td align="middle">
-                    <img src="images/example_image.png" width="480px" />
-                    <figcaption align="middle">Results Caption: my bunny is the bounciest bunny</figcaption>
+                  <td class="loops"><img src="images/part1/spheres2.png" width="400px" align="middle" /></td>
+                  <td class="loops"><img src="images/part1/spheres1.png" width="400px" align="middle" /></td>
+                  <td class="loops"><img src="images/part1/spheres3.png" width="400px" align="middle" /></td>
                 </tr>
             </table>
+            <figcaption align="middle">CBspheres_lambertian.dae</figcaption>
         </div>
-        <p>Here is an example of how to include a simple formula:</p>
-        <p align="middle"><pre align="middle">a^2 + b^2 = c^2</pre></p>
-        <p>or, alternatively, you can include an SVG image of a LaTex formula.</p>
-        <p>This time it's your job to copy-paste in the rest of the sections :)</p>
+
+        <p>We are now able to render simple scene using our camera rays</p>
+
+
+
 
 				<h2 align="middle">Part 2: Bounding Volume Hierarchy</h2>
 		        <p>For part 2, we implemented a bounding volume hierarchy (BVH) in order to accelarate our path tracer so that
 							it can render complex files more efficiently. With a naive implementation, the path tracer rendered simple images
-							in 40 - 60 seconds. This is fairly inefficienct because the path tracer was checking if each ray was intersecting every object in the scene, even
+							in ~100 seconds. This is fairly inefficienct because the path tracer was checking if each ray was intersecting every object in the scene, even
               if the ray completely missed the object. This inefficiency is resolved with BVH, which that uses a simple heuristic to "bound" the object in a
               simple box to first check whether the ray hits the box. If they ray intersects, the box, the object is recursively split into smaller bounding
               boxes to check if the ray still intersects. Essentially, we constructed a tree that stores a list of object primitives along with their bounding boxes.
@@ -91,7 +131,7 @@
         significantly. The BVH implementation, a good heuristic, and our intersect functions are able to effectively pick which bounding boxes intersect with rays, and disregard other bounding boxes that do not intersect
         with the ray at all. This enables us to reduce redundancies, and greatly reduce up our ray intersect runtime complexity from linear O(n) to logarithmic O(log(n)). </p>
 
-        <p> Pictured below are a few files, randing from simple to complex, after BVH implementation.</p>
+        <p> Pictured below are a few files ranging from simple to complex after BVH implementation.</p>
 
             </aside> </p>
 		        <div align="middle">
