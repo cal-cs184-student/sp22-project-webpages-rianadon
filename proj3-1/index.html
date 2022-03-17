@@ -19,9 +19,12 @@
     <h2 align="middle">Ryan Adolf & Natalie Kemper</h2>
 
     <div class="padded">
-        <p>Use this section to write an overview of the assignment. All of the text in your write-up should be <em>in your own words</em>. If you need to add additional HTML features to this document, you can search the <a href="http://www.w3schools.com/">http://www.w3schools.com/</a> website for instructions. To edit the HTML, you can just copy and paste existing chunks and fill in the text and image file names appropriately.</p>
-        <o>The website writeup is intended to be a self-contained walkthrough of the assignment: we want this to be a piece of work which showcases your understanding of relevant concepts through both mesh images as well as written explanations about what you did to complete each part of the assignment. Try to be as clear and organized as possible when writing about your own output files or extensions to the assignment. We want to understand what you've achieved and how you've done it!</p>
-        <p>If you are well-versed in web development, feel free to ditch this template and make a better looking page. Just make sure that you include all the components as we've laid them out here. </p>
+        <p> In this project, we implemented a physically-based renderer using a pathtracing algorithm to render scenes with complex geometry and lighting. We first created simple ray-privitive intersect functions
+        and a camera ray generating algorithm to render simple scenes. From there, we implemented bounding volume hierarchy (BVH) to speed up ray-primitive intersection, which greatly optimized our render times. Scenes
+      with complex geometry and mesh were rendered in O(log(n)) time compared to O(n) time with BVH implementation. To incorperate physical lighting into the scenes, we implemented direct and global illumination with
+    hemisphere and importance sampling. These sampling methods used Monte Carlo Integration to estimate our physical lighting. Finally, to reduce noise in our scenes, we implemented Adaptive Sampling, which
+   optimized our pixel sampling rates to account for higher and lower pixel convergence. This project allowed us to explore and learn about path tracing used in the industry, such as Renderman. It also helped us
+ understand different ways of optimization that greatly improve render times without sacrificing image quality.  </p>
 
     <h2 align="middle">Part 1: Ray Generation and Intersection</h2>
         <p>In Part 1, we implemented a ray trace algorithm for pixels using random sampling to generate light rays. These light rays travel from a light source and bounce off of some object in the
@@ -30,7 +33,8 @@
           first converted our image space coordinates to camera space coordinates before transforming it into a ray in world space. This function outputs a Ray object, which consists of an origin and direction
           vector that will be used to test object intersection. </p>
 
-          <p> After generating our camera rays, we created implemented <code>Triangle::intersect</code> and <code>Sphere::intersect</code> functions that return true whether an input ray intersects with the
+          <p> After generating our camera rays, we implemented <code>PathTracer::raytrace_pixel</code> where we randomly generated a fixed number of rays per pixel using the <code>Sampler</code> and our defined <code>generate_ray</code> function.
+            From there, we implemented <code>Triangle::intersect</code> and <code>Sphere::intersect</code> functions that return true whether an input ray intersects with the
           given primitive, and stores information about the intersection point. For our triangle intersection method, we used Barycentric Coordinates and the Moller-Trumbore algorithm:</p>
 
           <div align="center">
@@ -74,7 +78,23 @@
             <figcaption align="middle">CBspheres_lambertian.dae</figcaption>
         </div>
 
-        <p>We are now able to render simple scene using our camera rays</p>
+        <p>After finishing part 1, We were able to render simple scenes using our randomly sampled ray tracing, generated camera rays, and primitive instersection functions!</p>
+
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/part1/b.png" width="480px" />
+                    <figcaption align="middle">Banana.dae</figcaption>
+                  </td>
+                  <td>
+                    <td align="middle">
+                    <img src="images/part1/gems.png" width="480px" />
+                    <figcaption align="middle">CBgems.dae</figcaption>
+                  </td>
+                </tr>
+            </table>
+        </div>
 
 
 
@@ -165,18 +185,68 @@
                 <figcaption align="middle">Dragon.dae! This mesh, comprised of millions of triangles, took about 0.4 seconds to render with BVH.</figcaption>
 		        </div>
 
+<h2 align="middle">Part 5: Adaptive Sampling</h2>
+
+<p> From Parts 3 and 4, we were able to render complex and realistic images with Monte Carlo. However, our images have large amounts of noise because there are not enough samples per pixel.
+   Thus, if we increase increasing the number of samples per pixel, we can reduce the noise in an image. Due to different textures, geometries, and shapes within a scene, some pixels converge faster with low sampling rates,
+   while other pixels require more samples to get rid of noise. Thus, Adaptive Sampling is useful since we do not have to sample uniformly for all pixels. Adaptive Sampling tests each pixel by checking how fast the pixel
+   converges when we ray trace samples through it. Essentially, Adaptive Sampling concentrates a high number of samples to more complicated parts of the image (pixels converge slower) so that we are not redundantly sampling over areas where pixels converge faster. </p>
+
+<p> To implement Adaptive Sampling, we updated <code>PathTracer::raytrace_pixel</code> with a simple algorithm. We are looping through a fixed number of samples per pixel, but with Adaptive Sampling, we
+  check each pixel's convergence every 32 samples using this formula: </p>
+
+  <div align="center">
+      <table style="width=100%">
+          <tr>
+              <td>
+                  <img src="images/part5/convergence.png" align="middle" width="200px" />
+              </td>
+            </tr>
+          </table>
+        </div>
+
+<p> To compute variance and mean, we used the pixels illuminance to keep track of two variables <code>s1</code> and <code>s2</code> where each <code>x</code> is the pixel's illuminance.
+  From there, we were able to calculate the mean and standard deviation necessary for the convergence formula and convergence check. </p>
+
+  <div align="center">
+      <table style="width=100%">
+          <tr>
+              <td>
+                  <img src="images/part5/formula.png" align="middle" width="280px" />
+                  <figcaption align="middle">Mean and Variance Formula</figcaption>
+              </td>
+              <td>
+                  <img src="images/part5/s1.png" align="middle" width="200px" />
+                  <figcaption align="middle">s1 and s2 used to calculate mean and variance</figcaption>
+              </td>
+          </tr>
+      </table>
+  </div>
+
+<p> The smaller the I, the more confidently we can say that our pixel has converged. Thus, for every 32 samples, if the condition below is satisfied, we
+  assume that the pixel has converged and we stop tracing rays for that pixel. If it is not satisfied, we continue to race rays. Finally, we updated our <code>sampleCountBuffer</code>
+  with your number of samples per pixel so that we could visually see the output sampling rate images. Below are the final rendered images using 2048 samples per pixel. On the right, we
+we see our image has little to no noise, and on the left, we see the sampling rate color coded by the amount sampled per pixel. Here, blue indicates a low sampling rate, and red indicates a
+high sampline rate. We can visually see how the Adaptive Sampling algorithm enabled different sampling rates for different parts of the image. Areas where there is fast convergence, like the walls
+and area light, where sampled with much fewer samples compared to areas with low convergence like the bunny's shadow and corners of the ceiling. Low convergence areas were sampled much more to get rid of
+noise. </p>
 
 
-    <h2 align="middle">A Few Notes On Webpages</h2>
-        <p>Here are a few problems students have encountered in the past. You will probably encounter these problems at some point, so don't wait until right before the deadline to check that everything is working. Test your website on the instructional machines early!</p>
-        <ul>
-        <li>Your main report page should be called index.html.</li>
-        <li>Be sure to include and turn in all of the other files (such as images) that are linked in your report!</li>
-        <li>Use only <em>relative</em> paths to files, such as <pre>"./images/image.jpg"</pre>
-        Do <em>NOT</em> use absolute paths, such as <pre>"/Users/student/Desktop/image.jpg"</pre></li>
-        <li>Pay close attention to your filename extensions. Remember that on UNIX systems (such as the instructional machines), capitalization matters. <pre>.png != .jpeg != .jpg != .JPG</pre>
-        <li>Be sure to adjust the permissions on your files so that they are world readable. For more information on this please see this tutorial: <a href="http://www.grymoire.com/Unix/Permissions.html">http://www.grymoire.com/Unix/Permissions.html</a></li>
-        <li>And again, test your website on the instructional machines early!</li>
+   <div align="center">
+       <table style="width=100%">
+           <tr>
+               <td>
+                   <img src="images/part5/bunny.png" align="middle" width="480px" />
+                   <figcaption align="middle">CBbunny.dae! 2048 Samples Per Pixel</figcaption>
+               </td>
+               <td>
+                   <img src="images/part5/samplerate.png" align="middle" width="480px" />
+                   <figcaption align="middle">CBbunny.dae Sampling Rate Image</figcaption>
+               </td>
+           </tr>
+       </table>
+   </div>
+
 </div>
 </body>
 </html>
