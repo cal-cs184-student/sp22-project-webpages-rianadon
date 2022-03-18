@@ -292,7 +292,7 @@
 <h2 align="middle">Part 5: Adaptive Sampling</h2>
 
 <p> From Parts 3 and 4, we were able to render complex and realistic images with Monte Carlo. However, our images have large amounts of noise because there are not enough samples per pixel.
-   Thus, if we increase increasing the number of samples per pixel, we can reduce the noise in an image. Due to different textures, geometries, and shapes within a scene, some pixels converge faster with low sampling rates,
+   Thus, if we increase the number of samples per pixel, we can reduce the noise in an image. Due to different textures, geometries, and shapes within a scene, some pixels converge faster with low sampling rates,
    while other pixels require more samples to get rid of noise. Thus, Adaptive Sampling is useful since we do not have to sample uniformly for all pixels. Adaptive Sampling tests each pixel by checking how fast the pixel
    converges when we ray trace samples through it. Essentially, Adaptive Sampling concentrates a high number of samples to more complicated parts of the image (pixels converge slower) so that we are not redundantly sampling over areas where pixels converge faster. </p>
 
@@ -329,10 +329,9 @@
 
 <p> The smaller the I, the more confidently we can say that our pixel has converged. Thus, for every 32 samples, if the condition below is satisfied, we
   assume that the pixel has converged and we stop tracing rays for that pixel. If it is not satisfied, we continue to race rays. Finally, we updated our <code>sampleCountBuffer</code>
-  with your number of samples per pixel so that we could visually see the output sampling rate images. Below are the final rendered images using 2048 samples per pixel. On the right, we
-we see our image has little to no noise, and on the left, we see the sampling rate color coded by the amount sampled per pixel. Here, blue indicates a low sampling rate, and red indicates a
-high sampline rate. We can visually see how the Adaptive Sampling algorithm enabled different sampling rates for different parts of the image. Areas where there is fast convergence, like the walls
-and area light, where sampled with much fewer samples compared to areas with low convergence like the bunny's shadow and corners of the ceiling. Low convergence areas were sampled much more to get rid of
+  with your number of samples per pixel so that we could visually see the output sampling rate images. Below are the final rendered images using 2048 samples per pixel. On the left, we see our image has little to no noise, and on the right, we see the sampling rate color coded by the amount sampled per pixel. Here, blue indicates a low sampling rate, and red indicates a
+high sampling rate. We can visually see how the Adaptive Sampling algorithm enabled different sampling rates for different parts of the image. Areas where there is fast convergence, like the walls
+and area light, were sampled with much fewer samples compared to areas with low convergence like the bunny's shadow and corners of the ceiling. Low convergence areas were sampled much more to get rid of
 noise. </p>
 
 
