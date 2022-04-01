@@ -1,7 +1,151 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 3-2 here
-	</body>
-</html>
+<title>Your Name  |  CS 184</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+</head>
+<body>
+<br />
+<h1 align="middle">Assignment 3-2: PathTracer</h1>
+    <h2 align="middle">Ryan Adolf & Natalie Kemper</h2>
+
+    <div class="padded">
+        <p> This project is an extension of Project 3-1, where we implemented new textures to apply to mesh, as well as camera effects to render images with depth (Parts 1 and 4).
+				For Part 1, we created glass/mirror material using reflection and refraction properties to create mirror and glass textures. From there, we implemented Depth of Field in Part 4, which uses
+			a thin lense camera model to focus certain objects in the scene. This project was super interesting, and we really enjoyed exploring the ways in which material can be implemented from natural phenomena to create
+		  texures in such a realistic way. We are both taking UCBUGG this semster, and it was really interesting learning about the actual implementation of these textures that we use for our animation, since we are using
+			 Pixar surface textures for many of our assets and characters! We will definitely be completely the rest of these tasks once the semester ends! </p>
+
+    <h2 align="middle">Part 1: Mirror and Glass Materials</h2>
+        <p> In this part, we implememted mirror and glass textures. We first implemented a reflect function, <code>BSDF::reflect</code>, which takes
+				in a vector and returns its reflection about the normal, (0, 0, 1). From there, we were able to implement the mirror material by calling our helper reflect
+			  function into <code>MirrorBSDF::sample_f()</code>, which returns the reflected vector divided by the absolute value of the cosine of the normal vector. </p>
+				<p> From there, we implemented the refraction functions necessary for the glass texture. Since our BSDF calculations are in a canonical "object coordinate frame,
+				we can rely on spherical Snell's equations to calculate the refraction. We implemented <code>BSDF::refract()</code>, which takes an input vector and assigns the
+				output vector to the refraction vector. The function outputs a boolean that tells us whether or not the resulting vector outputs a valid refraction. Refraction
+				only happens when:</p>
+
+				<div align="center">
+						<table style="width=100%">
+								<tr>
+										<td align="middle">
+										<img src="part1/equation.png" width="200px" />
+									</td>
+								</tr>
+						</table>
+				</div>
+
+				<p>If this case is satisfied, then there is total internal reflection, and thus, the function will return false and will not assign the output vector. In the
+				equation above, &#951; is calculated based on <ior> and whether the vector is "entering" or "exiting" the material. If the vector enters the material, &#951; = 1 / ior. When the
+				vector is exiting the material, &#951; = ior. The illustration below visually depicts this situation. </p>
+
+				<div align="center">
+						<table style="width=100%">
+								<tr>
+										<td align="middle">
+										<img src="part1/ior.png" width="480px" />
+									</td>
+								</tr>
+						</table>
+				</div>
+
+				<p> After implementing refraction and reflection, we were able to render beautiful images. Below, we see that CBDragon.dae is able to reflect brilliantly. </p>
+
+					<div align="center">
+							<table style="width=100%">
+									<tr>
+											<td align="middle">
+											<img src="part1/dragonhigh_res.png" width="480px" />
+											<figcaption align="middle">CBDragon.png with mirrored texture</figcaption>
+										</td>
+									</tr>
+							</table>
+					</div>
+
+					<p> After completing relfection and refraction, we were able to render beautiful photos of reflective surfaces. In order to progress to glass material, we implemented
+					<code>GlassBSDF::sample_f()</code>. For this function, if there is total internal reflection, we calculate the reflection of the vector and return its reflectance divided by the cosine of the
+				  vector. If there is no total internal reflection, that means that both reflection and refraction occur. In this case, we can use Schlick's approximation to calculate
+				  the of the reflection energy to the refraction energy. This ration will help us determine if we should return a reflection ray or a refration ray, since <code>GlassBSDF::sample_f()</code> only returns
+				  one ray direction. Thus, we used a <code>coin_flip</code> function with the Schlick coefficient, R, to randomly determine whether the ray will be reflected or refracted.</p> We manually computed Schlick's
+					coefficient using the formula:
+
+					<div align="center">
+							<table style="width=100%">
+									<tr>
+											<td align="middle">
+											<img src="part1/shlick.png" width="250px" />
+										</td>
+									</tr>
+							</table>
+					</div>
+
+					<p>If the coin flip returned true, we calculated the reflection of the vector and returned <code>R * reflectance / (cosine of the vector)</code>. Otherwise, we
+					calculated the refraction of the vector and returned <code> (1-R) * transmittance / (cosine of the vector) / &#951;^2</code>. After completing this function, we were able to render
+					beautiful images with mirror and glass texture. Below is the rendered image of CBLucy.dae with the glass material! </p>
+
+					<div align="center">
+							<table style="width=100%">
+									<tr>
+											<td align="middle">
+											<img src="part1/lucyhigh_res.png" width="480px" />
+										</td>
+									</tr>
+							</table>
+					</div>
+
+					<p> We rendered many images of CBspheres.dae to compare different max_ray_depth levels. The levels range from 0, 1, 2, 3, 4, 5, and 100, and we rendered with
+						2048 samples per pixel with 4 samples per light. We compared the different multibounce effects that appear in each image and how these effects were influenced by the max_ray_depth.</p>
+
+				<div align="center">
+						<table style="width=100%">
+								<tr>
+										<td align="middle">
+										<img src="part1/spheres00.png" width="480px" />
+										<figcaption align="middle">Max Ray Depth of 0. With -m = 0, the image is completely dark because light is only being directed toward the camera, and so
+										none of our objects in the scene are lit up. </figcaption>
+									</td>
+									<td>
+										<td align="middle">
+										<img src="part1/spheres11.png" width="480px" />
+										<figcaption align="middle">Max Ray Depth of 1 With -m = 1, we are only getting direct illumination with the environment, and not our two spheres, thence they are completely black.
+										However, there is still reflectance from the illumination, so we are able to see the white reflection of the spheres.</figcaption>
+									</td>
+								</tr>
+								<tr>
+										<td align="middle">
+										<img src="part1/spheres2.png" width="480px" />
+										<figcaption align="middle">Max Ray Depth of 2. With -m = 2, we are getting slighly more interesting images. We are able to get a bounce for the mirror material as seen in the first sphere, however, the second sphere is still dark because another bounce of light is necessary to get the ray to shine through the sphere to achieve a glass effect.</figcaption>
+									</td>
+									<td>
+										<td align="middle">
+										<img src="part1/spheres3.png" width="480px" />
+										<figcaption align="middle">Max Ray Depth of 3. With -m = 3, another light bounce allows the glass material to begin to show on the second sphere. However, the reflection on the first sphere still shows a dark sphere, and thus, it needs another light bounce to illuminate the reflected glass ball. Also, the shadows under the second sphere are still dark, and require more light
+										bounces to create the castic effect.</figcaption>
+									</td>
+								</tr>
+								<tr>
+										<td align="middle">
+										<img src="part1/spheres4.png" width="480px" />
+										<figcaption align="middle">Max Ray Depth of 4. With -m = 4, the mirrored sphere shows the glass ball in its reflection, and the glassy ball is able to refract the light to cast the castic shadow below. The sphere is also able to refract the light onto the nearing wall. </figcaption>
+									</td>
+									<td>
+										<td align="middle">
+										<img src="part1/spheres5.png" width="480px" />
+										<figcaption align="middle">Max Ray Depth of 5. With -m = 5, we finally have an image where the light is properly refracted and reflected. </figcaption>
+									</td>
+								</tr>
+						</table>
+				</div>
+
+				<div align="center">
+						<table style="width=100%">
+								<tr>
+										<td align="middle">
+										<img src="part1/spheres1000.png" width="480px" />
+										<figcaption align="middle">Max Ray Depth of 100. With -m = 100, the image is not too different than when -m = 5. The colors, are able to blend more into the reflected and refracted spheres, but everything else is more or less the same compared to when -m = 5. </figcaption>
+									</td>
+								</tr>
+						</table>
+				</div>
+
+
+
+				<p> For this assignment, Ryan completed part 4 while Natalie completed part 1. We were able to work well together, and were able to work on parts that were interesting to both of us, while still collaborating on the project together. </p>
