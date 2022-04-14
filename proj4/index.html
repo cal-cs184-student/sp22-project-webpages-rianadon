@@ -144,5 +144,22 @@
 
         <h2 align="middle">Part 5: Shaders</h2>
 
+        <p>For this part of the project, we wrote several shader programs to implement the material shading of the cloth and sphere. A shader program controls how to turn a set of points (for example the points of the cloth) into an image. The vertex shader determines where in space to place the vertices, and the fragment shader specifies how to color the faces connecting vertices. Ultimately it is the fragment shader responsible for determining the final appearance of the materials, so most of the shader programs we wrote were fragment shaders.</p>
+
+        <p>The Blinn-Pong shading model simulates light behavior to produce a realistic-looking material render. It does not account for shadows and reflections from other objects like a path tracer, but it still models light properties like diffuse reflection, specular reflection, and ambient light from the environment. Some of these properties, like ambient light, are constant for the whole model. Others like specular reflection involve many parameters including camera angle, face normal, and light direction.</p>
+
+        <div align="center">
+			<table style="width=100%">
+				<tr>
+					<td align="middle">
+						<img src="images/blinnphong.png" height="300px" />
+					</td>
+                    <td align="middle">
+						<img src="images/blinnphong-full.png" height="300px" />
+					</td>
+				</tr>
+			</table>
+            <figcaption>The three components of the Blinn-Phong shader (left) and the final render (right).</figcaption>
+		</div>        
+
 				<p> For this assignment, Natalie completed parts 1 and 3 while Ryan completed parts 2 and 4. We both worked on part 5. We were able to work well together, and were able to work on parts that were interesting to both of us, while still collaborating on the project together. </p>
->>>>>>> 29fa9372a0ffadbab8f6720b34888ba3df891a8f
