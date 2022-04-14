@@ -65,6 +65,57 @@
 
         <h2 align="middle">Part 3: Handling collisions with other objects</h2>
         <h2 align="middle">Part 4: Handling self-collisions</h2>
+
+        <div align="center">
+			<table style="width=100%">
+				<tr>
+					<td align="middle">
+						<img src="images/clothfold1.png" width="300px" />
+                        <img src="images/clothfold2.png" width="300px" />
+                        <img src="images/clothfold3.png" width="300px" />
+					</td>
+				</tr>
+			</table>
+            <figcaption>Images of the cloth falling on the ground and producing self-collisions.</figcaption>
+		</div>
+
+        <p>When varying the density, the magnitude of the self-collision forces increases. This leads to noisier edges in the cloth (greater displacement of the points) as well as greater frequency of folds. Also, at higher densities, the points far from the plane are affected less by the self-collision forces.</p>
+
+        <div align="center">
+			<table style="width=100%">
+				<tr>
+					<td align="middle">
+						<img src="images/density_selfcollide-0001.png" width="900px" />
+					</td>
+				</tr>
+			</table>
+		</div>
+
+        <p>A video comparing the rate various densities is below. The screenshot above was taken about 2 seconds in. The images from left to right have densities of 1, 15, and 150 g/cm^2. The three stitched videos are not synced perfectly in time but align closely.</p>
+
+        <div align="center">
+            <video controls width="900px">
+                <source type="video/mp4"  src="images/density_selfcollide.mp4"/>
+            </video>
+        </div>
+
+        <p>With larger values of <code>ks</code>, the cloth bends at more gradual angles. The folds are larger and more circular and make for more exaggerated motion.</p>
+
+        <div align="center">
+			<table style="width=100%">
+				<tr>
+					<td align="middle">
+                        <img src="images/selfcollide-ks1.png" width="400px" />
+                        <figcaption>Cloth folding, with ks=5000</figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/selfcollide-ks2.png" width="400px" />
+                        <figcaption>Cloth folding, with ks=500,000</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+        
         <h2 align="middle">Part 5: Shaders</h2>
 
 				<p> For this assignment, Natalie completed parts 1 and 3 while Ryan completed parts 2 and 4. We both worked on part 5. We were able to work well together, and were able to work on parts that were interesting to both of us, while still collaborating on the project together. </p>
