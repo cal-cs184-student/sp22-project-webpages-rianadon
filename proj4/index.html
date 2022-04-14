@@ -1,42 +1,148 @@
+<title>Assignment 4  |  CS 184</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+</head>
+<body>
+    <a href="https://cal-cs184-student.github.io/sp22-project-webpages-sweater/proj3-2/index.html">https://cal-cs184-student.github.io/sp22-project-webpages-sweater/proj4/index.html</a>
+<br />
 <h1 align="middle">Assignment 4: Cloth Simulation</h1>
-    <h2 align="middle">Nataie Kemper & Ryan Adolf</h2>
-		<div class="padded">
+    <h2 align="middle">Ryan Adolf & Natalie Kemper</h2>
 
-			<p> Overview </p>
+    <div class="padded">
+        <p>We coded a cloth simulation for this project, using physical concepts like masses and springs to model the cloth. Cloth sims are used for creating clothes and fabrics in animation, which is important for creating realistic motion and saving animators time. To implement our cloth simulation we coded the physics equations for our grid of points and handled cloth collisions with spheres, planes, and the cloth itself. For the final part of the project, we created shaders to shade the cloth with diffuse and Blinn-Phong shading as well as textures, bump maps, displacement maps, and environment-mapped reflections.</p>
 
-		<h2 align="middle">Part 1: Masses and Springs</h2>
-		<div class="padded">
-			<p> </p>
 
-			<div align="middle">
-					<table style="border-collapse: collapse">
-							<tr>
-								<td class="loops"><img src="part1/all.png" width="600px" align="middle" /></td>
-								<td class="loops"><img src="part1/closeup.png" width="600px" align="middle" /></td>
-							</tr>
-					</table>
-					<figcaption align="middle">Grid of spring and masses with structural, shearing, and bending constraints.</figcaption>
-			</div>
+        <h2 align="middle">Part 1: Masses and springs</h2>
+				<div align="middle">
+						<table style="border-collapse: collapse">
+								<tr>
+									<td class="loops"><img src="part1/all.png" width="600px" align="middle" /></td>
+									<td class="loops"><img src="part1/closeup.png" width="600px" align="middle" /></td>
+								</tr>
+						</table>
+						<figcaption align="middle">Grid of spring and masses with structural, shearing, and bending constraints.</figcaption>
+				</div>
 
-			<div align="center">
-					<table style="width=100%">
-							<tr>
-									<td>
-											<img src="part1/structural1.png" align="middle" width="600px" />
-											<figcaption align="middle">Wireframe with only structural and bending constraints</figcaption>
-									</td>
-									<td>
-											<img src="part1/shearing1.png" align="middle" width="600px" />
-											<figcaption align="middle">Wireframe with only shearing constraints</figcaption>
-									</td>
-							</tr>
-					</table>
-			</div>
+				<div align="center">
+						<table style="width=100%">
+								<tr>
+										<td>
+												<img src="part1/structural1.png" align="middle" width="600px" />
+												<figcaption align="middle">Wireframe with only structural and bending constraints</figcaption>
+										</td>
+										<td>
+												<img src="part1/shearing1.png" align="middle" width="600px" />
+												<figcaption align="middle">Wireframe with only shearing constraints</figcaption>
+										</td>
+								</tr>
+						</table>
+				</div>
 
-		<h2 align="middle">Part 2: Simulation via Numerical Integration</h2>
 
-		<h2 align="middle">Part 3: Handling Collisions with Other Objects</h2>
+        <h2 align="middle">Part 2: Simulation via numerical integration</h2>
 
-		<h2 align="middle">Part 4: Handling Self-Collisions</h2>
+        <p>The parameter <code>ks</code> controls the stiffness of the cloth. The cloth is most stiff (does not sag and looks like a solid plane rotating about the two pinned points) at high values of <code>ks</code>.</p>
 
-		<h2 align="middle">Part 5: Shaders</h2>
+        <p>The parameter <code>density</code> controls how much the cloth will fold on itself. With a low <code>density</code>, the cloth is very smooth. And has few ripples in its final position. With high <code>density</code>, the cloth folds onto itself more, creating smaller and more frequent ripples.</p>
+
+        <div align="center">
+			<table style="width=100%">
+				<tr>
+					<td align="middle">
+						<img src="images/density1.png" width="300px" />
+                        <figcaption>Density of 1 g/cm^2</figcaption>
+					</td>
+					<td align="middle">
+						<img src="images/density150.png" width="300px" />
+                        <figcaption>Density of 150 g/cm^2</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+        <p>Increasing <code>damping</code> slows down the simulation and the apparent speed of the cloth but produces visually similar results by the end of the simulation. With the 4-pinned-corner cloth, <code>damping</code> changes the number of ripples in the cloth after it fully stretches itself: a higher <code>damping</code> value produces fewer ripples.</p>
+
+        <div align="center">
+			<table style="width=100%">
+				<tr>
+					<td align="middle">
+						<img src="images/damping020.png" width="300px" />
+                        <figcaption>Damping = 0.20%, after a few seconds</figcaption>
+					</td>
+					<td align="middle">
+						<img src="images/damping080.png" width="300px" />
+                        <figcaption>Damping = 0.80%, after about a minute</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+        Below is the cloth with 4 pinned corners, shaded with the Blinn-Phong shader to better show how the cloth folds on itself.
+
+        <div align="center">
+			<table style="width=100%">
+				<tr>
+					<td align="middle">
+						<img src="images/pinned4.png" width="300px" />
+					</td>
+				</tr>
+			</table>
+		</div>
+
+        <h2 align="middle">Part 3: Handling collisions with other objects</h2>
+        <h2 align="middle">Part 4: Handling self-collisions</h2>
+
+        <div align="center">
+			<table style="width=100%">
+				<tr>
+					<td align="middle">
+						<img src="images/clothfold1.png" width="300px" />
+                        <img src="images/clothfold2.png" width="300px" />
+                        <img src="images/clothfold3.png" width="300px" />
+					</td>
+				</tr>
+			</table>
+            <figcaption>Images of the cloth falling on the ground and producing self-collisions.</figcaption>
+		</div>
+
+        <p>When varying the density, the magnitude of the self-collision forces increases. This leads to noisier edges in the cloth (greater displacement of the points) as well as greater frequency of folds. Also, at higher densities, the points far from the plane are affected less by the self-collision forces.</p>
+
+        <div align="center">
+			<table style="width=100%">
+				<tr>
+					<td align="middle">
+						<img src="images/density_selfcollide-0001.png" width="900px" />
+					</td>
+				</tr>
+			</table>
+		</div>
+
+        <p>A video comparing the rate various densities is below. The screenshot above was taken about 2 seconds in. The images from left to right have densities of 1, 15, and 150 g/cm^2. The three stitched videos are not synced perfectly in time but align closely.</p>
+
+        <div align="center">
+            <video controls width="900px">
+                <source type="video/mp4"  src="images/density_selfcollide.mp4"/>
+            </video>
+        </div>
+
+        <p>With larger values of <code>ks</code>, the cloth bends at more gradual angles. The folds are larger and more circular and make for more exaggerated motion.</p>
+
+        <div align="center">
+			<table style="width=100%">
+				<tr>
+					<td align="middle">
+                        <img src="images/selfcollide-ks1.png" width="400px" />
+                        <figcaption>Cloth folding, with ks=5000</figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/selfcollide-ks2.png" width="400px" />
+                        <figcaption>Cloth folding, with ks=500,000</figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+        <h2 align="middle">Part 5: Shaders</h2>
+
+				<p> For this assignment, Natalie completed parts 1 and 3 while Ryan completed parts 2 and 4. We both worked on part 5. We were able to work well together, and were able to work on parts that were interesting to both of us, while still collaborating on the project together. </p>
+>>>>>>> 29fa9372a0ffadbab8f6720b34888ba3df891a8f

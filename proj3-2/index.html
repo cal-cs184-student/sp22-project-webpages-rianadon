@@ -3,6 +3,7 @@
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
 </head>
 <body>
+    <a href="https://cal-cs184-student.github.io/sp22-project-webpages-sweater/proj3-2/index.html">https://cal-cs184-student.github.io/sp22-project-webpages-sweater/proj3-2/index.html</a>
 <br />
 <h1 align="middle">Assignment 3-2: PathTracer</h1>
     <h2 align="middle">Ryan Adolf & Natalie Kemper</h2>
@@ -10,8 +11,8 @@
     <div class="padded">
         <p> This project is an extension of Project 3-1, where we implemented new textures to apply to mesh, as well as camera effects to render images with depth (Parts 1 and 4).
 				For Part 1, we created glass/mirror material using reflection and refraction properties to create mirror and glass textures. From there, we implemented Depth of Field in Part 4, which uses
-			a thin lense camera model to focus certain objects in the scene. This project was super interesting, and we really enjoyed exploring the ways in which material can be implemented from natural phenomena to create
-		  texures in such a realistic way. We are both taking UCBUGG this semster, and it was really interesting learning about the actual implementation of these textures that we use for our animation, since we are using
+			a thin lens camera model to focus certain objects in the scene. This project was super interesting, and we really enjoyed exploring the ways in which material can be implemented from natural phenomena to create
+		  textures in such a realistic way. We are both taking UCBUGG this semester, and it was really interesting learning about the actual implementation of these textures that we use for our animation, since we are using
 			 Pixar surface textures for many of our assets and characters! We will definitely be completely the rest of these tasks once the semester ends! </p>
 
     <h2 align="middle">Part 1: Mirror and Glass Materials</h2>
@@ -146,6 +147,72 @@
 						</table>
 				</div>
 
+                <h2 align="middle">Part 4: Depth of Field</h2>
+
+        <p>When rendering with the pinhole camera model, all our rays originate from a single point, the position of the camera. With the thin lens model, they originate from the lens plane and are sampled from a distribution centered at the current pixel being rendered. Depending on the focal distance, these rays will bend from the lens plane in directions slightly different than how they would bend if we drew a ray straight from the pixel to the center of the lens like for the pinhole model.</p>
+
+        <p>We implemented this part by using the same equations as part 1 to find the point on the image plane, then using the provided equations to find the lens sample point and focal plane point.<p>
+
+        <div align="center">
+            <img src="part4/lens.png" width="800" />
+        </div>
+
+        <p>The image above shows how sampling a ray passing from the lens plane to the image plane creates a resulting ray that is positioned differently than the ray in the pinhole model.</p>
+
+        <h3 align="middle">Focus stack</h3>
+
+        <p>All images are rendered with aperture size 0.5.</p>
+
+        	<div align="center">
+							<table style="width=100%">
+									<tr>
+											<td align="middle">
+											    <img src="part4/dragon2.png" width="300px" />
+											    <figcaption align="middle">Focal length 4.66</figcaption>
+										    </td>
+											<td align="middle">
+											    <img src="part4/dragon1.png" width="300px" />
+											    <figcaption align="middle">Focal length 4.76</figcaption>
+										    </td>
+											<td align="middle">
+											    <img src="part4/dragon3.png" width="300px" />
+											    <figcaption align="middle">Focal length 4.86</figcaption>
+										    </td>
+											<td align="middle">
+											    <img src="part4/dragon4.png" width="300px" />
+											    <figcaption align="middle">Focal length 4.96</figcaption>
+										    </td>
+									</tr>
+							</table>
+			</div>
+
+        <p>At each focal length, a different part of the dragon is in focus. In the leftmost part, the dragon's eyes and the front of its belly are in focus. In the final image, the end of its tail is in focus and the front is blurred.<p>
+
+            <h3 align="middle">Aperture stack</h3>
+            <div align="center">
+							<table style="width=100%">
+									<tr>
+											<td align="middle">
+											    <img src="part4/dragon2-01.png" width="300px" />
+											    <figcaption align="middle">Aperture size 0.1</figcaption>
+										    </td>
+											<td align="middle">
+											    <img src="part4/dragon2.png" width="300px" />
+											    <figcaption align="middle">Aperture size 0.5</figcaption>
+										    </td>
+											<td align="middle">
+											    <img src="part4/dragon2-1.png" width="300px" />
+											    <figcaption align="middle">Aperture size 1.0</figcaption>
+										    </td>
+											<td align="middle">
+											    <img src="part4/dragon2-2.png" width="300px" />
+											    <figcaption align="middle">Aperture size 2.0</figcaption>
+										    </td>
+									</tr>
+							</table>
+			</div>
+
+            <p>It looks almost as if there are two lights in these images. However, the staff solution has the same problem so this phenomenon is most likely a result in the idealistic quality of the thin lens equation. In real life, lenses are not infinitely thin but rather refract light as it is passed through the lens.</p>
 
 
 				<p> For this assignment, Ryan completed part 4 while Natalie completed part 1. We were able to work well together, and were able to work on parts that were interesting to both of us, while still collaborating on the project together. </p>
