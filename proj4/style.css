@@ -20,3 +20,10 @@ figcaption {
 table, video {
     margin: 1rem;
 }
+
+code {
+    font-family: 'Source Code Pro', monospace;
+    background: #e6e6e6;
+    border-radius: 0.2rem;
+    padding: 0 0.2rem;
+}
