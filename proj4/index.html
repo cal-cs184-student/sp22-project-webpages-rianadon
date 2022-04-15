@@ -96,7 +96,7 @@
 
         <p>It is important to handle collisions with points inside the cloth; spring forces alone will not prevent the cloth from falling onto itself. We implement self-collisions by first building a hash map to aid in efficient lookup of points, then iterate through every point, altering positions to enforce a minimum distance between points.</p>
 
-        <p>To build the hash map, we hash points by dividing the world space into a grid and computing to which box the point belongs. With the x, y, and z position of the box, we use the formula <code>((53 + x) * 53 + y) * 53 + z</code>to compute the hash which is inspired by <a href="https://stackoverflow.com/a/2634715">this StackOverflow answer</a>. This formula ensures that boxes close to each other in space get different hashes.</p>
+        <p>To build the hash map, we hash points by dividing the world space into a grid and computing to which box the point belongs. With the x, y, and z position of the box, we use the formula <code>((53 + x) * 53 + y) * 53 + z</code> to compute the hash which is inspired by <a href="https://stackoverflow.com/a/2634715">this StackOverflow answer</a>. This formula ensures that boxes close to each other in space get different hashes.</p>
 
         <div align="center">
 			<table style="width=100%">
@@ -172,6 +172,8 @@
 
         <h3 align="middle">Texture Mapping</h3>
 
+        <p>The mesh already passes its UV coordinates to the fragment shader. To implement texture mapping, we use the <code>texture</code> function and pass in the texture and UV coordinate.</p>
+
          <div align="center">
 			<table style="width=100%">
 				<tr>
@@ -182,5 +184,11 @@
 			</table>
             <figcaption>Chris Rock at the oscars, but on a cloth.</figcaption>
 		 </div>
+
+         <h3 align="middle">Bump mapping</h3>
+
+         <p>To implement the bump map, we compute a normal as the gradient of the bump map texture. The gradient is found by sampling the texture at two locations very close in space in both x and y directions and computing the difference. This normal is scaled by the bump height then rotated into the coordinate space of the original normal by multiplying with the TBN matrix. This is the new normal vector. The TBN matrix is made of columns consisting of the original normal (N) of the face, a tangent vector (T) to the space, and a bitangent vector (B) orthogonal to both of these. Finally, we shade the sphere using the new normal vector and Blinn-Phong shading.
+
+         <h2 align="middle">Division of work</h2>
 
 				<p> For this assignment, Natalie completed parts 1 and 3 while Ryan completed parts 2 and 4. We both worked on part 5. We were able to work well together, and were able to work on parts that were interesting to both of us, while still collaborating on the project together. </p>

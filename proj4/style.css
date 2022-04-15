@@ -1,5 +1,6 @@
 body {
     font-family: Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif", "Bitstream Vera Serif", "Liberation Serif", Georgia, serif;
+    line-height: 1.4;
 }
 
 h1, h2, h3, h4 {
@@ -25,5 +26,5 @@ code {
     font-family: 'Source Code Pro', monospace;
     background: #e6e6e6;
     border-radius: 0.2rem;
-    padding: 0 0.2rem;
+    padding: 0.05rem 0.2rem;
 }
