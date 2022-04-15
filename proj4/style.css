@@ -1,0 +1,30 @@
+body {
+    font-family: Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif", "Bitstream Vera Serif", "Liberation Serif", Georgia, serif;
+    line-height: 1.4;
+}
+
+h1, h2, h3, h4 {
+    color: #333;
+}
+
+p {
+    width: 38rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+figcaption {
+    margin-top: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+table, video {
+    margin: 1rem;
+}
+
+code {
+    font-family: 'Source Code Pro', monospace;
+    background: #e6e6e6;
+    border-radius: 0.2rem;
+    padding: 0.05rem 0.2rem;
+}
