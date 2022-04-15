@@ -13,7 +13,25 @@
 
 
         <h2 align="middle">Part 1: Masses and springs</h2>
-				<div align="middle">
+					<p> In this part of the project, we created a cloth wireframe by construcing a grid of masses and springs. We added every point mass to a 1D <code>point_mass</code> vector,
+					and different kinds of springs to a 1D <code>spring_mass</code> vector. </p>
+
+					<p> We started constructing a grid of evenly space point masses first. To do this, we used a double for loop to iterate through the total number of
+						height and width point masses, and checked the cloth's orientation to determine how to set each point masses' coordinates. If the cloth was oriented horizontally,
+					  we set the y-coordinate of the point mass to 1.0, and varied positions over the xz plane. If the cloth was oriented vertically, we generated a small random offset for the
+					  z-coordinate and varied positions over the xy plane. We stored each point mass in the <code>point_masses</code> vector in row-major-x-axis order. </p>
+
+					<p> After creating the grid of masses, we began implement the grid of springs. Similarly, we created a double for loop to iterate through the total number of
+					  height and width springs. For each of our point masses found in the <code>point_masses</code> vector, we created springs to apply the structual, shear, and bending constraints between point masses.
+					  Each spring takes in pointers to the two point masses that belong at the two ends of the spring, and is added to the 1D <code>spring_masses</code> vector. We created springs of each type for all spring mass based on the rules of each constraint: </p>
+
+					<p> 1.) Structural: Constraints exist between a point mass and the point mass to its left as well as the point mass above it</p>
+					<p> 2.) Shearing: Constraints exist between a point mass and the point mass to its diagonal upper left as well as the point mass to its diagonal upper right</p>
+					<p> 3.) Bending: Bending constraints exist between a point mass and the point mass two away to its left as well as the point mass two above it </p>
+
+					<p> After filling the <code>point_masses</code> and <code>spring_masses</code> vectors with our point masses and springs, we were able to construct a wireframe of our cloth as shown below! </p>
+
+					<div align="center">
 						<table style="border-collapse: collapse">
 								<tr>
 									<td class="loops"><img src="part1/all.png" width="600px" align="middle" /></td>
@@ -49,11 +67,11 @@
 			<table style="width=100%">
 				<tr>
 					<td align="middle">
-						<img src="images/density1.png" width="300px" />
+						<img src="images/density1.png" width="500px" />
                         <figcaption>Density of 1 g/cm^2</figcaption>
 					</td>
 					<td align="middle">
-						<img src="images/density150.png" width="300px" />
+						<img src="images/density150.png" width="500px" />
                         <figcaption>Density of 150 g/cm^2</figcaption>
 					</td>
 				</tr>
@@ -66,11 +84,11 @@
 			<table style="width=100%">
 				<tr>
 					<td align="middle">
-						<img src="images/damping020.png" width="300px" />
+						<img src="images/damping020.png" width="500px" />
                         <figcaption>Damping = 0.20%, after a few seconds</figcaption>
 					</td>
 					<td align="middle">
-						<img src="images/damping080.png" width="300px" />
+						<img src="images/damping080.png" width="500px" />
                         <figcaption>Damping = 0.80%, after about a minute</figcaption>
 					</td>
 				</tr>
@@ -83,13 +101,69 @@
 			<table style="width=100%">
 				<tr>
 					<td align="middle">
-						<img src="images/pinned4.png" width="300px" />
+						<img src="images/pinned4.png" width="500px" />
 					</td>
 				</tr>
 			</table>
 		</div>
 
         <h2 align="middle">Part 3: Handling collisions with other objects</h2>
+				<p> In part 3, we implemented the <code>Sphere::collide</code> and <code>Plane::collide</code> method that allowed our mesh cloth to interact with spheres and planes.
+					Generally, the collide method checks whether or not a point mass is inside the primitive. If it is, we adjust the point mass' position so that it lies just outside of
+					the sphere/plane's surface. </p>
+
+				<p> For sphere primitives, we calculated a vector, called <code>tangent</code> that extended from the given point mass' position to the sphere's origin (<code> point_mass.position - origin</code>)
+				and found its Euclidean length by taking its <code>norm()</code>. We knew that the cloth intersects the primitive if this length was less than the sphere's radius. Thus, if the length <= radius,
+			  then we would need to update the point mass' position to be slightly outside of the sphere's surface. To do this, we normalized the tangent vector and calculated a correction vector that would be added
+			  to the point mass' <code>last_position</code> vector. To calculate the correction vector, we simply found the point of intersection between the ray and sphere's surface using the
+				tangent vector, the radius, and the sphere's origin: <code>(tangent * radius) + origin</code>. Finally, we updated the point mass' position by scaling the correction vector by the constant of friction and
+				adding this value to its last poisiton (<code>(1 - friction) * correction + last_position</code>). </p>
+
+				<p> Below are a few images of the cloth with different ks values. </p>
+
+				<div align="center">
+						<table style="width=100%">
+								<tr>
+										<td align="middle">
+												<img src="part3/500.png" width="300px" />
+												<figcaption align="middle">ks = 500</figcaption>
+											</td>
+										<td align="middle">
+												<img src="part3/5000.png" width="300px" />
+												<figcaption align="middle">ks = 5000</figcaption>
+											</td>
+										<td align="middle">
+												<img src="part3/50000.png" width="300px" />
+												<figcaption align="middle">ks = 50000</figcaption>
+											</td>
+								</tr>
+						</table>
+		</div>
+
+		<p> In order to do account for plane-cloth collisions, we did a similar thing as spheres, by calculating the direction (tangent) vector using <code> point_mass.position - point</code>, where <code>point</code>
+		if a point on the surface plane. To check if there was a collision with the plane, we took the dot product between this vector and normal to the plane, and checked whether its product was negative. It if is, we know that the cloth intersect in some way.
+	  From there, we created a vector <code>last</code> that determines the vector <code>pm.last_position - point</code>. This vector is used to check if the cloth's last position is on a different side of the plan than the cloth's initial position. If
+	  it is, we know that the cloth intersected the plane, and thus we need to bump it back to the correct side of the plane using the correction vector and surface offset. Thus, if the dot product between
+	  <code>last</code> and <code>normal</code> is not negative, we can add the surface offset to our tangent_point (calculated by <code>dot(direction vector, normal)</code>) and apply this to our correction vector. After calculating the correction vector based on
+	  which side the cloth is on, we can finally update its position by scaling the correction by the friction coefficient (1 - friction) and adding this value to its <code>last_position</code> vector. </p>
+
+		<p> Below are images of the cloth resting peacfully on the plane!</p>
+
+		div align="center">
+				<table style="width=100%">
+						<tr>
+								<td align="middle">
+										<img src="part3/wire.png" width="300px" />
+										<figcaption align="middle">ks = 500</figcaption>
+									</td>
+								<td align="middle">
+										<img src="part3/texture.png" width="300px" />
+										<figcaption align="middle">ks = 5000</figcaption>
+									</td>
+						</tr>
+				</table>
+</div>
+
         <h2 align="middle">Part 4: Handling self-collisions</h2>
 
         <div align="center">
@@ -97,8 +171,8 @@
 				<tr>
 					<td align="middle">
 						<img src="images/clothfold1.png" width="300px" />
-                        <img src="images/clothfold2.png" width="300px" />
-                        <img src="images/clothfold3.png" width="300px" />
+                        <img src="images/clothfold2.png" width="500px" />
+                        <img src="images/clothfold3.png" width="500px" />
 					</td>
 				</tr>
 			</table>
@@ -145,4 +219,3 @@
         <h2 align="middle">Part 5: Shaders</h2>
 
 				<p> For this assignment, Natalie completed parts 1 and 3 while Ryan completed parts 2 and 4. We both worked on part 5. We were able to work well together, and were able to work on parts that were interesting to both of us, while still collaborating on the project together. </p>
->>>>>>> 29fa9372a0ffadbab8f6720b34888ba3df891a8f
