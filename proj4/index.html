@@ -41,6 +41,8 @@
 
         <h2 align="middle">Part 2: Simulation via numerical integration</h2>
 
+        <p>In this part of the project we modeled the physical forces on each point mass within the cloth. The first step is to account for the force of gravity on every point. Then we account for the forces between springs using Hooke's law. Once we have computed the force on all point masses, we use Verlet integration to compute the new positions of the masses, which integrates these forces over time and incorporates damping. Finally, we constrain the lengths of springs to be no more than 110% of their rest length so that no point is unreasonably moved by the algorithm. Taken together, these many moving point-masses approximate the motion of a real cloth.</p>
+
         <p>The parameter <code>ks</code> controls the stiffness of the cloth. The cloth is most stiff (does not sag and looks like a solid plane rotating about the two pinned points) at high values of <code>ks</code>.</p>
 
         <p>The parameter <code>density</code> controls how much the cloth will fold on itself. With a low <code>density</code>, the cloth is very smooth. And has few ripples in its final position. With high <code>density</code>, the cloth folds onto itself more, creating smaller and more frequent ripples.</p>
@@ -146,6 +148,8 @@
 
         <p>For this part of the project, we wrote several shader programs to implement the material shading of the cloth and sphere. A shader program controls how to turn a set of points (for example the points of the cloth) into an image. The vertex shader determines where in space to place the vertices, and the fragment shader specifies how to color the faces connecting vertices. Ultimately it is the fragment shader responsible for determining the final appearance of the materials, so most of the shader programs we wrote were fragment shaders.</p>
 
+        <h3 align="middle">Blinn-Phong shading</h3>
+
         <p>The Blinn-Pong shading model simulates light behavior to produce a realistic-looking material render. It does not account for shadows and reflections from other objects like a path tracer, but it still models light properties like diffuse reflection, specular reflection, and ambient light from the environment. Some of these properties, like ambient light, are constant for the whole model. Others like specular reflection involve many parameters including camera angle, face normal, and light direction.</p>
 
         <div align="center">
@@ -160,6 +164,19 @@
 				</tr>
 			</table>
             <figcaption>The three components of the Blinn-Phong shader (left) and the final render (right).</figcaption>
-		</div>        
+		</div>
+
+        <h3 align="middle">Texture Mapping</h3>
+
+         <div align="center">
+			<table style="width=100%">
+				<tr>
+					<td align="middle">
+						<img src="images/chrisrock.png" height="400px" />
+					</td>
+				</tr>
+			</table>
+            <figcaption>Chris Rock at the oscars, but on a cloth.</figcaption>
+		 </div>
 
 				<p> For this assignment, Natalie completed parts 1 and 3 while Ryan completed parts 2 and 4. We both worked on part 5. We were able to work well together, and were able to work on parts that were interesting to both of us, while still collaborating on the project together. </p>
