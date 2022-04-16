@@ -151,7 +151,7 @@
 
 		<p> Below are images of the cloth resting peacfully on the plane!</p>
 
-		div align="center">
+		<div align="center">
 				<table style="width=100%">
 						<tr>
 								<td align="middle">
@@ -262,6 +262,26 @@
          <h3 align="middle">Bump mapping</h3>
 
          <p>To implement the bump map, we compute a normal as the gradient of the bump map texture. The gradient is found by sampling the texture at two locations very close in space in both x and y directions and computing the difference. This normal is scaled by the bump height then rotated into the coordinate space of the original normal by multiplying with the TBN matrix. This is the new normal vector. The TBN matrix is made of columns consisting of the original normal (N) of the face, a tangent vector (T) to the space, and a bitangent vector (B) orthogonal to both of these. Finally, we shade the sphere using the new normal vector and Blinn-Phong shading.
+
+				<h3 align="middle">Displacement Mapping</h3>
+
+				<h3 align="middle">Environment-mapped Reflections</h3>
+
+				<p> To implement the mirrored texture, we simply calculated the eye-ray vector, w_o, using <code>vec4(u_cam_pos, 1.0) - v_position</code> and used this eye-ray vector to compute the incoming direction ray. This was
+					calculated by reflecting the eye-ray vector about the normal at the surface. Finally, we sampled the environment map for the incoming direction, w_i, and used this to get the out_color that would be reflected.
+				</p>
+
+				<div align="center">
+		 <table style="width=100%">
+			 <tr>
+				 <td align="middle">
+					 <img src="images/mirror.png" height="400px" />
+				 </td>
+			 </tr>
+		 </table>
+					 <figcaption>Look! Shiny new mirror texture!.</figcaption>
+		</div>
+
 
          <h2 align="middle">Division of work</h2>
 
