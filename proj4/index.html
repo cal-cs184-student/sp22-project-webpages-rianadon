@@ -261,9 +261,55 @@
 
          <h3 align="middle">Bump mapping</h3>
 
-         <p>To implement the bump map, we compute a normal as the gradient of the bump map texture. The gradient is found by sampling the texture at two locations very close in space in both x and y directions and computing the difference. This normal is scaled by the bump height then rotated into the coordinate space of the original normal by multiplying with the TBN matrix. This is the new normal vector. The TBN matrix is made of columns consisting of the original normal (N) of the face, a tangent vector (T) to the space, and a bitangent vector (B) orthogonal to both of these. Finally, we shade the sphere using the new normal vector and Blinn-Phong shading.
+         <p>To implement the bump map, we compute a normal as the gradient of the bump map texture. The gradient is found by sampling the texture at two locations very close in space in both x and y directions and computing the difference. This normal is scaled by the bump height then rotated into the coordinate space of the original normal by multiplying with the TBN matrix. This is the new normal vector. The TBN matrix is made of columns consisting of the original normal (N) of the face, a tangent vector (T) to the space, and a bitangent vector (B) orthogonal to both of these. Finally, we shade the sphere using the new normal vector and Blinn-Phong shading. </p>
+
+         <div align="center">
+       <table style="width=100%">
+         <tr>
+           <td align="middle">
+                         <img src="images/bump2.png" width="400px" />
+                         <figcaption>Bump texture with Normal = 2, Height = 1</figcaption>
+                     </td>
+                     <td align="middle">
+                         <img src="images/bump1.png" width="400px" />
+                         <figcaption>Displacement texture with Normal = 8, Height = 2</figcaption>
+           </td>
+         </tr>
+       </table>
+     </div>
+
 
 				<h3 align="middle">Displacement Mapping</h3>
+
+        <p> Implementing displacement mapping was quite similar to bump mapping. We first copied our fragment shader code of our <code>Bump.frag</code> to our <code>Displacement.frag</code. From there, we modified our
+          <code>Displacement.vert</code> so that it displaces the vertex positions based on this formula: </p>
+
+          <div align="center">
+  			<table style="width=100%">
+  				<tr>
+  					<td align="middle">
+  						<img src="images/formula.png" width="200px" />
+  					</td>
+  				</tr>
+  			</table>
+  		</div>
+
+      <p>Below are images of the displacement texture applied to the sphere! Bumpy!</p>
+
+          <div align="center">
+  			<table style="width=100%">
+  				<tr>
+  					<td align="middle">
+                          <img src="images/displacement1.png" width="400px" />
+                          <figcaption>Displacement texture with Normal = 100, Height = 0.02</figcaption>
+                      </td>
+                      <td align="middle">
+                          <img src="images/displacement2.png" width="400px" />
+                          <figcaption>Displacement texture with Normal = 200, Height = 0.04</figcaption>
+  					</td>
+  				</tr>
+  			</table>
+  		</div>
 
 				<h3 align="middle">Environment-mapped Reflections</h3>
 
